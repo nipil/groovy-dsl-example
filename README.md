@@ -12,7 +12,15 @@ Par le wrapper, qui va récupérer toutes les dépendances
 
     export GROOVY_JAR=$(find ~/.gradle/caches -name 'groovy-all-2.4.7.jar')
 
-# example 1 : dsl dans le scriptin script
+# example 1 : dsl qui est situé un script externe
+
+    java -cp $GROOVY_JAR:build/libs/groovy-dsl-example.jar ExternalDsl
+
+Se référer aux commentaires dans le code pour les éléments d'_implémentation_ pertinents
+
+A regarder en premier, car le suivant masque le comportement détaillé vu ici
+
+# example 2 : dsl qui est inclus dans le script
 
 Pour lancer l'exemple :
 
@@ -20,11 +28,7 @@ Pour lancer l'exemple :
 
 Se référer aux commentaires dans le code pour les éléments d'_implémentation_ pertinents
 
-# example 2 : dsl dans un script interne
-
-    java -cp $GROOVY_JAR:build/libs/groovy-dsl-example.jar ExternalDsl
-
-Se référer aux commentaires dans le code pour les éléments d'_implémentation_ pertinents
+A regarder après la version "externe"
 
 # Résultat attendu (dans les deux cas)
 
