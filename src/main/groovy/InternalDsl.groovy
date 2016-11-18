@@ -1,5 +1,5 @@
-// run with `./gradlew -q run` at project root
-println "hello world"
+import groovy.transform.BaseScript
+@BaseScript EmailScriptSpec baseScript
 
 email {
     from 'dsl-guru@mycompany.com'
@@ -9,5 +9,3 @@ email {
         p 'Really, the pope has resigned!'
     }
 }
-
-println "yada yada"
