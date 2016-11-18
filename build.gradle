@@ -1,4 +1,4 @@
-apply plugin: 'groovy' // appplies 'java'
+apply plugin: 'groovy' // le plugin groovy applique automatiquement le plugin java
 
 repositories {
     jcenter()
@@ -7,3 +7,5 @@ repositories {
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.7'
 }
+
+// pas besoin de configurer le plugin groovy ni java car on a respecté les conventions
