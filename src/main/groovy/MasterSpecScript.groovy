@@ -1,4 +1,4 @@
-abstract class EmailScriptSpec extends Script implements DelegateTrait {
+abstract class MasterSpecScript extends Script implements DelegateTrait {
     def email_spec_obj = new EmailSpec()
 
     def email(Closure cl) {

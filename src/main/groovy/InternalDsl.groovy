@@ -1,5 +1,5 @@
 import groovy.transform.BaseScript
-@BaseScript EmailScriptSpec baseScript
+@BaseScript MasterSpecScript baseScript
 
 email {
     from 'dsl-guru@mycompany.com'

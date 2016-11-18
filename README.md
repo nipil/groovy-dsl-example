@@ -1,24 +1,32 @@
 # groovy-dsl-example
 
-A minimalist example of doing DSL in groovy
+Un exemple minimaliste de DSL en Groovy, et le lien avec le script (interne au script groovy en lui-même), ou bien dans un fichier externe au script
 
-# build
+# construction
 
-./gradlew build
+Par le wrapper, qui va récupérer toutes les dépendances
 
-# find groovy jar
+    ./gradlew build
 
-export GROOVY_JAR=$(find ~/.gradle/caches -name 'groovy-all-2.4.7.jar')
+# on localise le jar groovy
 
-# example 1 : dsl included in script
+    export GROOVY_JAR=$(find ~/.gradle/caches -name 'groovy-all-2.4.7.jar')
 
-java -cp $GROOVY_JAR:build/libs/groovy-dsl-example.jar InternalDsl
+# example 1 : dsl dans le scriptin script
 
-# example 2 : dsl in external file
+Pour lancer l'exemple :
 
-java -cp $GROOVY_JAR:build/libs/groovy-dsl-example.jar ExternalDsl
+    java -cp $GROOVY_JAR:build/libs/groovy-dsl-example.jar InternalDsl
 
-# output (in both cases)
+Se référer aux commentaires dans le code pour les éléments d'_implémentation_ pertinents
+
+# example 2 : dsl dans un script interne
+
+    java -cp $GROOVY_JAR:build/libs/groovy-dsl-example.jar ExternalDsl
+
+Se référer aux commentaires dans le code pour les éléments d'_implémentation_ pertinents
+
+# Résultat attendu (dans les deux cas)
 
      EmailScriptSpec: email keywork closure delegation start
      From: dsl-guru@mycompany.com
@@ -29,20 +37,52 @@ java -cp $GROOVY_JAR:build/libs/groovy-dsl-example.jar ExternalDsl
      EmailSpec: email keywork closure delegation ends
      EmailScriptSpec: email keywork closure delegation ends
 
-# comments
+# Explication : La classe spec pour le "plus haut niveau"
 
-## top-most script spec class
+Le DSL de l'exemple ne contient qu'un mot clé maître `email`. Dans l'absolu, on pourrait avoir plusieurs mots clés qui se suivent !
 
-The script class (representing the "outer-level" dsl closure holding the top-most keywords) *has to be* an abstract class :
+En conséquence, au niveau le plus élevé, notre DSL est une closure qui contient un ou plusieurs mots clés (ici, un seul : `email`)
 
-    abstract class EmailScriptSpec extends Script {
+Du coup, il faut une classe "spec" qui va contenir le nécessaire pour renvoyer vers les classes "spec" de chaque mot clé
 
-This is required as the "concrete class" for a groovy script is always generated dynamically (creating its `run` method)
+Ici on l'aurait appelée `MasterSpec`, et elle contiendrait une seule méthode `email` pour le mot clé de niveau max
 
-## re-implementing the "delegate closure"
+# Explication : la classe `MasterSpec` est en fait `MasterSpecScript`
 
-a class spec may delegate a closure to another class
+Le DSL _est en fait un script groovy_ et du coup il faut un point d'entrée qui permette son évaluation
 
-if you have multiple classes doing that, you have redundant code (see `EmailScriptSpec.email` and `EmailSpec.Body`)
+Il faut donc un objet, de classe `Script` qui prenne en main son évaluation (quelle que soit la manière)
 
-ideally you could refactor that _behaviour_ and share it among classes using a Trait implementation
+C'est la raison pour laquelle la classe `MasterSpec` est une classe `MasterSpecScript` : on la fait hériter de `Script` pour qu'elle puisse être directement utilisée pour l'évaluation du DSL
+
+# Explication : la classe `MasterSpecScript` est abstraite
+
+D'un côté, la classe Script est une classe abstraite. Elle n'a pas sa méthode `run()` définie.
+
+D'un autre côté, un script groovy autogénère une classe de type `Script` _dont la méthode `run()` contient le texte du script_ !
+
+Du coup, si la classe `MasterSpecScript` n'était pas abstraite mais concrête, on _serait obligés_ de fournir une implémentation de `run()`
+
+Sauf que si on fournit une implémentation, le fonctionnement normal (et automatique) qui est de mettre le contenu du script dans `run()` ne serait plus possible
+
+En conséquence, on conserve une classe abstraite, et on laisse `run()` indéfinie, et la mécanique de définition du contenu de `run()` peut fonctionner
+
+# Explication : délégation de la closure à un autre objet
+
+Une classe a des méthodes qui servent de mots clés, et ces méthodes prennent comme argument ce qui vient après dans le DSL (jusqu'à la fin du statement)
+
+Si ce qui vient derrière est une closure, il est habituel de _déléguer_ la gestion de cette closure à un objet de la classe spec qui saura gérer son contenu.
+
+Du coup la méthode qui correspond au mot clé qui utilise une closure ressemble à la méthode `EmailSpec:Body`
+
+Cependant, si (et c'est généralement le cas) on a plusieurs classes et/ou fonctions qui font de la délégation de closure, on va répéter ce code pleins de fois... ce qui n'est pas génial.
+
+On peut donc vouloir factoriser ce code.
+
+Si on utilise une `Interface`, on ne factoriserait que la déclaration du fait qu'il y a une méthode "réutilisable" : chaque objet devrait réimplémenter concrêtement cette méthode déclarée.
+
+Par contre, si on utilise un `Trait` on factorise à la fois la déclaration, mais aussi le comportement par défaut associé à cette déclaration.
+
+C'est ce qui est fait dans la classe `DelegateTrait` et sa méthode `delegate`, qui est utilisée dans `MasterSpecScript` à la méthode `email`
+
+A titre d'exercice, on peut appliquer le même principe pour éviter d'avoir le code "redondant" dans `EmailSpec:body` 
