@@ -32,14 +32,14 @@ A regarder après la version "externe"
 
 # Résultat attendu (dans les deux cas)
 
-     EmailScriptSpec: email keywork closure delegation start
-     From: dsl-guru@mycompany.com
-     To: [john.doe@waitaminute.com]
-     Subject: The pope has resigned!
-     EmailSpec: email keywork closure delegation start
-     Para: Really, the pope has resigned!
-     EmailSpec: email keywork closure delegation ends
-     EmailScriptSpec: email keywork closure delegation ends
+    DelegateAbility: delegating closure to EmailSpec@1563da5 starts
+    From: dsl-guru@mycompany.com
+    To: [john.doe@waitaminute.com]
+    Subject: The pope has resigned!
+    EmailSpec: email keywork closure delegation start
+    Para: Really, the pope has resigned!
+    EmailSpec: email keywork closure delegation ends
+    DelegateAbility: delegating closure to EmailSpec@1563da5 ends
 
 # Explication : La classe spec pour le "plus haut niveau"
 
