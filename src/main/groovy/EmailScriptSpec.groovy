@@ -1,10 +1,7 @@
-abstract class EmailScriptSpec extends Script {
+abstract class EmailScriptSpec extends Script implements DelegateTrait {
+    def email_spec_obj = new EmailSpec()
+
     def email(Closure cl) {
-        println "EmailScriptSpec: email keywork closure delegation start"
-        def email = new EmailSpec()
-        def code = cl.rehydrate(email, this, this)
-        code.resolveStrategy = Closure.DELEGATE_ONLY
-        code()
-        println "EmailScriptSpec: email keywork closure delegation ends"
+        this.delegate(cl, email_spec_obj)
     }
 }

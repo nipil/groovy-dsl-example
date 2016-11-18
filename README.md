@@ -38,3 +38,11 @@ The script class (representing the "outer-level" dsl closure holding the top-mos
     abstract class EmailScriptSpec extends Script {
 
 This is required as the "concrete class" for a groovy script is always generated dynamically (creating its `run` method)
+
+## re-implementing the "delegate closure"
+
+a class spec may delegate a closure to another class
+
+if you have multiple classes doing that, you have redundant code (see `EmailScriptSpec.email` and `EmailSpec.Body`)
+
+ideally you could refactor that _behaviour_ and share it among classes using a Trait implementation
